@@ -49,71 +49,85 @@ namespace final_softwareii_API.Controllers
             return candidato;
         }
 
-        // PUT: api/Candidatos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCandidato(int id, Candidato candidato)
-        {
-            if (id != candidato.Dpi)
-            {
-                return BadRequest();
-            }
+        //// PUT: api/Candidatos/5
+        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutCandidato(int id, Candidato candidato)
+        //{
+        //    if (id != candidato.Dpi)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(candidato).State = EntityState.Modified;
+        //    _context.Entry(candidato).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CandidatoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!CandidatoExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/Candidatos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Candidato>> PostCandidato(Candidato candidato)
+        public async Task<ActionResult<Candidato>> PostCandidato(Candidato candidato, string correo, string contraseña)
         {
-          if (_context.Candidatos == null)
-          {
-              return Problem("Entity set 'FinalSoftwareiiContext.Candidatos'  is null.");
-          }
-            _context.Candidatos.Add(candidato);
-            await _context.SaveChangesAsync();
+            var fase1 = await _context.Fases.FindAsync(1);
+            var fase2 = await _context.Fases.FindAsync(2);
+            var fase3 = await _context.Fases.FindAsync(3);
+            var fase4 = await _context.Fases.FindAsync(4);
 
-            return CreatedAtAction("GetCandidato", new { id = candidato.Dpi }, candidato);
+            if ((bool)fase1.Estado && !(bool)fase2.Estado && !(bool)fase3.Estado && !(bool)fase4.Estado)
+            {
+                var usuario = await _context.Usuarios.FindAsync(correo);
+                if (usuario.Contraseña == contraseña)
+                {
+                    if (_context.Candidatos == null)
+                    {
+                        return Problem("Entity set 'FinalSoftwareiiContext.Candidatos'  is null.");
+                    }
+                    _context.Candidatos.Add(candidato);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetCandidato", new { id = candidato.Dpi }, candidato);
+                }
+                return Unauthorized();
+            }
+            return BadRequest();
         }
 
-        // DELETE: api/Candidatos/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCandidato(int id)
-        {
-            if (_context.Candidatos == null)
-            {
-                return NotFound();
-            }
-            var candidato = await _context.Candidatos.FindAsync(id);
-            if (candidato == null)
-            {
-                return NotFound();
-            }
+        //// DELETE: api/Candidatos/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteCandidato(int id)
+        //{
+        //    if (_context.Candidatos == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var candidato = await _context.Candidatos.FindAsync(id);
+        //    if (candidato == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.Candidatos.Remove(candidato);
-            await _context.SaveChangesAsync();
+        //    _context.Candidatos.Remove(candidato);
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         private bool CandidatoExists(int id)
         {

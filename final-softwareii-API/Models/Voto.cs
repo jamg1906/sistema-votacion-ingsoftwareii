@@ -13,5 +13,4 @@ public partial class Voto
 
     public string IpVoto { get; set; } = null!;
 
-    public virtual Candidato? DpiCandidatoNavigation { get; set; }
 }
